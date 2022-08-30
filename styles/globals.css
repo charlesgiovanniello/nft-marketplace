@@ -1,4 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inconsolata:wght@100;200;300;400;500;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Satisfy:wght@100;200;300;400;500;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Tangerine:wght@100;200;300;400;500;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Dancing Script:wght@100;200;300;400;500;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cinzel Decorative:wght@100;200;300;400;500;600;700;800;900&display=swap");
 
 /* ./styles/globals.css */
 @tailwind base;
@@ -6,7 +11,7 @@
 @tailwind utilities;
 
 .nft-gradient {
-   background: linear-gradient(101.12deg, #EB1484 27.35%, #C91CC3 99.99%, #C81CC5 100%, #C81CC5 100%);
+   background: linear-gradient(101.12deg, #787d1a 27.35%, #918f3c 99.99%, #7e7e2f 100%, #585715 100%);
 }
 
 .white-bg {
@@ -41,7 +46,7 @@
 .ball {
     top: 2px;
     left: 2px;
-    transition: transform 0.2s linear;
+    transition: transform 0.15s linear;
 }
   
 /*  target the elemenent after the label*/

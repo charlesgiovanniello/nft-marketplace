@@ -68,6 +68,11 @@ module.exports = {
     },
     fontFamily: {
       poppins: ['Poppins', 'sans-serif'],
+      Inconsolata: ['Inconsolata', 'sans-serif'],
+      Satisfy: ['Satisfy', 'handwriting'],
+      Tangerine: ['Tangerine', 'handwriting'],
+      dancingScript: ['Dancing Script', 'handwriting'],
+      cinzelDecorative: ['Cinzel Decorative', 'custom'],
     },
   },
   variants: {
