@@ -117,7 +117,7 @@ const Navbar = () => {
               height={25}
               alt="close"
               onClick={() => setIsOpen(true)}
-              className={theme === 'light' && 'filter invert'}
+              className={theme === 'light' ? 'filter invert' : undefined}
             />
           )}
         {isOpen && (

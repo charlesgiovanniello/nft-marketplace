@@ -18,7 +18,7 @@ const Footer = () => {
 
   return (
     <footer className="flexCenter flex-col border-t dark:border-nft-black-1 border-nft-gray-1 sm:p7-8 py-16 ">
-      <div className="w-full minmd:w-4/5 flex flex-row md:flex-col sm:px-4 px-16 justify-between items-center">
+      <div className="w-full minmd:w-4/5 flex flex-row md:flex-col sm:px-4 px-16 justify-around items-center">
         {/* LOGO */}
         <div className="flex flexBetweenStart flex-wrap md:ml-0 md:place-self-center ">
           <Image src={images.logo02} objectFit="contain" width={50} height={50} alt="logo" />
@@ -52,7 +52,7 @@ const Footer = () => {
                   width={24}
                   height={24}
                   alt="social"
-                  className={theme === 'light' && 'filter invert'}
+                  className={theme === 'light' ? 'filter invert' : undefined}
                 />
 
               </div>
