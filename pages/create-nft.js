@@ -6,13 +6,19 @@ import { useTheme } from 'next-themes';
 
 import { Button } from '../components';
 import images from '../assets';
+import Input from '../components/Input';
+import { NFTContext } from '../context/NFTContext';
 
 const CreateNFT = () => {
   const [fileUrl, setFileUrl] = useState(null);
   const { theme } = useTheme();
+  const [formInput, setFormInput] = useState({ price: '', name: '', description: '' });
+  const { uploadToIPFS, createNFT } = useContext(NFTContext);
+  const router = useRouter();
 
-  const onDrop = useCallback(() => {
-    // upload image to blockchain (IPFS)
+  const onDrop = useCallback(async (acceptedFile) => {
+    const url = await uploadToIPFS(acceptedFile[0]);
+    setFileUrl(url);
   }, []);
 
   const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({
@@ -20,6 +26,8 @@ const CreateNFT = () => {
     accept: 'image/*',
     maxSize: 5000000,
   });
+
+  console.log(formInput);
 
   const fileStyle = useMemo(() => (
     `dark:bg-nft-black-1 bg:white border dark:border-white border-nft-gray-2 flex flex-col items-center p-5 rounded-sm border-dashed 
@@ -46,11 +54,11 @@ const CreateNFT = () => {
                     height={100}
                     objectFit="contain"
                     alt="file_upload"
-                    className={theme === 'light' && 'filter invert'}
+                    className={theme === 'light' ? 'filter invert' : undefined}
                   />
                 </div>
-                <p className=" font-poppins dark:text-white text-nft-black-1 font-semibold text-sm">Drag and drop file</p>
-                <p className=" font-poppins dark:text-white text-nft-black-1 font-normal text-sm mt-2">Or browse media on your device</p>
+                <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-sm">Drag and drop file</p>
+                <p className="font-poppins dark:text-white text-nft-black-1 font-normal text-sm mt-2">Or browse media on your device</p>
               </div>
             </div>
             {fileUrl && (
@@ -62,8 +70,33 @@ const CreateNFT = () => {
             )}
           </div>
         </div>
-      </div>
+        <Input
+          inputType="input"
+          title="Name"
+          placeholder="NFT Name"
+          handleClick={(e) => { setFormInput({ ...formInput, name: e.target.value }); }}
+        />
+        <Input
+          inputType="textarea"
+          title="Description"
+          placeholder="Description Of Your Item"
+          handleClick={(e) => { setFormInput({ ...formInput, description: e.target.value }); }}
+        />
+        <Input
+          inputType="number"
+          title="Price"
+          placeholder="10 Eth"
+          handleClick={(e) => { setFormInput({ ...formInput, price: e.target.value }); }}
+        />
+        <div className="mt-7 w-full flex justify-end">
+          <Button
+            btnName="Create NFT"
+            className="rounded-xl"
+            handleClick={() => createNFT(formInput, fileUrl, router)}
+          />
 
+        </div>
+      </div>
     </div>
   );
 };
