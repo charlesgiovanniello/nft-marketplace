@@ -2,24 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import axios from 'axios';
 import Web3Modal from 'web3modal';
-import { create } from 'ipfs-http-client';
+// import { create } from 'ipfs-http-client';
 
+import { Web3Storage } from 'web3.storage';
 import { MarketAddress, MarketAddressABI } from './constants';
 
 export const NFTContext = React.createContext();
 
-const auth = `Basic ${Buffer.from(`${process.env.INFURA_PROJECT_ID}:${process.env.INFURA_API_SECRET}`).toString('base64')}`;
+// Construct with token and endpoint
+const client = new Web3Storage({ token: process.env.WEB_3_STORAGE_KEY });
 
-const client = create({
-  host: 'ipfs.infura.io',
-  port: 5001,
-  protocol: 'https',
-  path: 'api/v0/add',
-  method: 'POST',
-  headers: {
-    authorization: auth,
-  },
-});
+// const auth = `Basic ${Buffer.from(`${process.env.INFURA_PROJECT_ID}:${process.env.INFURA_API_SECRET}`).toString('base64')}`;
+
+// const client = create({
+//   host: 'ipfs.infura.io',
+//   port: 5001,
+//   protocol: 'https',
+//   path: 'api/v0/add',
+//   method: 'POST',
+//   headers: {
+//     authorization: auth,
+//   },
+// });
 
 const fetchContract = (signerOrProvider) => new ethers.Contract(MarketAddress, MarketAddressABI, signerOrProvider);
 
@@ -53,15 +57,32 @@ export const NFTProvider = ({ children }) => {
     window.location.reload();
   };
 
-  const uploadToIPFS = async (file, setFileURL) => {
-    try {
-      const added = await client.add({ content: file });
-      const url = `https://infura-ipfs.io/ipfs/${added.path}`;
+  const uploadToIPFS = async (files, setFileURL) => {
+    // try {
+    //   const reader = new FileReader();
+    //   reader.readAsArrayBuffer(file);
+    //   reader.onloadend = async () => {
+    //     setHash(getHash(file)
+    //     const url = `https://infura-ipfs.io/ipfs/${uploadResult.path}`;
+    //     console.log(url);
+    //     return url;
+    //   };
+    // } catch (e) {
+    //   console.log('Error uploading file to IPFS', e);
+    // }
+    // try {
+    //   const added = await client.add({ content: file });
+    //   const url = `https://infura-ipfs.io/ipfs/${added.path}`;
 
-      return url;
-    } catch (e) {
-      console.log('Error uploading file to IPFS', e);
-    }
+    //   return url;
+    // } catch (e) {
+    //   console.log('Error uploading file to IPFS', e);
+    // }
+    const cid = await client.put(files);
+    const url = `https://${cid}.ipfs.w3s.link/${files[0].name}`;
+    console.log('stored files with cid:', cid);
+    console.log(url);
+    return url;
   };
 
   const createSale = async (url, formInputPrice) => {
@@ -79,15 +100,18 @@ export const NFTProvider = ({ children }) => {
     await transaction.wait();
   };
 
-  const createNFT = async (formInput, fileURL, router) => {
+  const createNFT = async (formInput, fileURL, router, fileID) => {
     const { name, description, price } = formInput;
 
     if (!name || !description || !price || !fileURL) return;
 
-    const data = JSON.stringify({ name, description, image: fileURL });
+    const data = new Blob([JSON.stringify({ name, description, image: fileURL, fileID })], { type: 'application/json' });
+
+    const files = [new File([data], fileID)];
     try {
-      const added = await client.add(data);
-      const url = `https://infura-ipfs.io/ipfs/${added.path}`;
+      const added = await client.put(files);
+      console.log('FILE ID: ', fileID);
+      const url = `https://${added}.ipfs.w3s.link/${fileID}`;
 
       await createSale(url, price);
       router.push('/');
