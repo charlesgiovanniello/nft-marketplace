@@ -1,10 +1,10 @@
-import { useState, useMemo, useCallback, useContext } from 'react';
+import { useState, useMemo, useCallback, useContext, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useDropzone } from 'react-dropzone';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
 
-import { Button } from '../components';
+import { Button, Loader } from '../components';
 import images from '../assets';
 import Input from '../components/Input';
 import { NFTContext } from '../context/NFTContext';
@@ -14,13 +14,20 @@ const CreateNFT = () => {
   const [fileID, setFileID] = useState(null);
   const { theme } = useTheme();
   const [formInput, setFormInput] = useState({ price: '', name: '', description: '' });
-  const { uploadToIPFS, createNFT } = useContext(NFTContext);
+  const { uploadToIPFS, createNFT, isLoadingNFT } = useContext(NFTContext);
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const onDrop = useCallback(async (acceptedFiles) => {
+    setIsLoading(true);
     const url = await uploadToIPFS(acceptedFiles);
-    setFileUrl(url);
-    setFileID(url.substring(url.indexOf('/') + 2, url.indexOf('.')));
+    setIsLoading(false);
+    try {
+      setFileUrl(url);
+      setFileID(url.substring(url.indexOf('/') + 2, url.indexOf('.')));
+    } catch (e) {
+      console.log('Max file size exceeded', e);
+    }
   }, []);
 
   const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({
@@ -48,19 +55,23 @@ const CreateNFT = () => {
             <div {...getRootProps()} className={fileStyle}>
               <input {...getInputProps()} />
               <div className="flex-center flex-col text-center">
-                <p className=" font-poppins dark:text-white text-nft-black-1 font-semibold text-xl">JPG, PNG, GIF, SVG, WEBM. Max 100mb.</p>
-                <div className="my-12 w-full flex justify-center">
-                  <Image
-                    src={images.upload}
-                    width={100}
-                    height={100}
-                    objectFit="contain"
-                    alt="file_upload"
-                    className={theme === 'light' ? 'filter invert' : undefined}
-                  />
-                </div>
-                <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-sm">Drag and drop file</p>
-                <p className="font-poppins dark:text-white text-nft-black-1 font-normal text-sm mt-2">Or browse media on your device</p>
+                {!isLoading ? (
+                  <>
+                    <p className=" font-poppins dark:text-white text-nft-black-1 font-semibold text-xl">JPG, PNG, GIF, SVG, WEBM. Max 5Mb.</p>
+                    <div className="my-12 w-full flex justify-center">
+                      <Image
+                        src={images.upload}
+                        width={100}
+                        height={100}
+                        objectFit="contain"
+                        alt="file_upload"
+                        className={theme === 'light' ? 'filter invert' : undefined}
+                      />
+                    </div>
+                    <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-sm">Drag and drop file</p>
+                    <p className="font-poppins dark:text-white text-nft-black-1 font-normal text-sm mt-2">Or browse media on your device</p>
+                  </>
+                ) : <Loader /> }
               </div>
             </div>
             {fileUrl && (
@@ -71,6 +82,7 @@ const CreateNFT = () => {
               </aside>
             )}
           </div>
+
         </div>
         <Input
           inputType="input"
