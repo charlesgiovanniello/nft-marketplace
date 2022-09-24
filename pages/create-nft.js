@@ -3,8 +3,9 @@ import { useRouter } from 'next/router';
 import { useDropzone } from 'react-dropzone';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
+import { GiSadCrab } from 'react-icons/gi';
 
-import { Button, Loader } from '../components';
+import { Button, Loader, Modal } from '../components';
 import images from '../assets';
 import Input from '../components/Input';
 import { NFTContext } from '../context/NFTContext';
@@ -17,6 +18,12 @@ const CreateNFT = () => {
   const { uploadToIPFS, createNFT, isLoadingNFT } = useContext(NFTContext);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+
+  const [creationSuccessful, setcreationSuccessful] = useState(true);
+
+  // useEffect(() => {
+  //   setcreationSuccessful(false);
+  // }, [creationSuccessful]);
 
   const onDrop = useCallback(async (acceptedFiles) => {
     setIsLoading(true);
@@ -106,8 +113,30 @@ const CreateNFT = () => {
           <Button
             btnName="Create NFT"
             className="rounded-xl"
-            handleClick={() => createNFT(formInput, fileUrl, router, fileID)}
+            handleClick={async () => {
+              const created = await createNFT(formInput, fileUrl, router, fileID);
+              if (!created) {
+                console.log('Not created');
+                setcreationSuccessful(false);
+              }
+            }}
           />
+          {!creationSuccessful && (
+          <div>
+            <Modal
+              header="Error!"
+              body={(
+                <div className="flexCenter flex-col text-center">
+                  <div className="relative w-200 h-20 font-cinzelDecorative">
+                    <span className="">Error buying NFT, please ensure your wallet has enough funds!</span>
+                  </div>
+                  <GiSadCrab size={50} />
+                </div>
+            )}
+              handleClose={() => { setcreationSuccessful(true); }}
+            />
+          </div>
+          )}
 
         </div>
       </div>

@@ -97,7 +97,6 @@ const MyNFTs = () => {
                 setActiveSelect={setActiveSelect}
                 handleSearch={onHandleSearch}
                 clearSearch={onClearSearch}
-
               />
             </div>
             <div className="mt-3 w-full flex flex-wrap">

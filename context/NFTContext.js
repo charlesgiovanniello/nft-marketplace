@@ -78,6 +78,7 @@ export const NFTProvider = ({ children }) => {
     const signer = provider.getSigner();
 
     const price = ethers.utils.parseUnits(formInputPrice, 'ether');
+    console.log('Price as UINT256: ', price);
     const contract = fetchContract(signer);
     const listingPrice = await contract.getListingPrice();
     const transaction = !isReselling ? await contract.createToken(url, price, { value: listingPrice.toString() })
@@ -101,14 +102,17 @@ export const NFTProvider = ({ children }) => {
 
       await createSale(url, price);
       router.push('/');
+      return true;
     } catch (e) {
       console.log('Error uploading file to IPFS', e);
+      return false;
     }
   };
 
   const fetchNFTs = async () => {
     setIsLoadingNFT(false);
-    const provider = new ethers.providers.JsonRpcProvider();
+    // const provider = new ethers.providers.JsonRpcProvider();
+    const provider = ethers.getDefaultProvider('goerli');
     const contract = fetchContract(provider);
     try {
       const data = await contract.fetchMarketItems();
@@ -141,7 +145,8 @@ export const NFTProvider = ({ children }) => {
     setIsLoadingNFT(false);
     const web3Modal = new Web3Modal();
     const connection = await web3Modal.connect();
-    const provider = new ethers.providers.Web3Provider(connection);
+    // const provider = new ethers.providers.Web3Provider(connection);
+    const provider = new ethers.providers.JsonRpcProvider(`https://goerli.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`);
     const signer = provider.getSigner();
 
     const contract = fetchContract(signer);
