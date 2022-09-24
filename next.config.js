@@ -2,6 +2,11 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  eslint: {
+    // Warning: This allows production builds to successfully complete even if
+    // your project has ESLint errors.
+    ignoreDuringBuilds: true,
+  },
   env: {
     INFURA_PROJECT_ID: process.env.INFURA_PROJECT_ID,
     INFURA_API_SECRET: process.env.INFURA_API_SECRET,
